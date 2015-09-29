@@ -35,6 +35,10 @@
     transition: 0.2s!important;
 }
 
+.ocwp-active {
+    display: block !important;
+}
+
 /******************** LINKS ********************
  ********************       *******************/
 
@@ -584,8 +588,11 @@ $(document).ready(function() {
         $("#container").toggleClass("ocwp-container-push");
     });
 
-    $(".ocwp-cross-container").on("click", function(){
+    $('.ocwp-cross-container').on('click', function(){
         $("#container").toggleClass("ocwp-container-push");
+        
+        $('.ocwp-dropdown-nav').removeClass('ocwp-active');
+        
         $(".ocwp-bars-container").show();
     });
 
@@ -628,21 +635,9 @@ $(document).ready(function() {
             container.hide();
         }
     });
-
-    $(".ocwp-dropdown").eq(3).on("click", function(){
-        $(".ocwp-dropdown-nav").eq(1).toggle();
-    });
-
-    $(".ocwp-dropdown").eq(4).on("click", function(){
-        $(".ocwp-dropdown-nav").eq(2).toggle();
-    });
-
-    $(".ocwp-dropdown").eq(7).on("click", function(){
-        $(".ocwp-dropdown-nav").eq(3).toggle();
-    });
-
-    $(".ocwp-dropdown").eq(8).on("click", function(){
-        $(".ocwp-dropdown-nav").eq(4).toggle();
+            
+    $('.ocwp-dropdown').on('click', function() {        
+        $(this).find('.ocwp-dropdown-nav').toggleClass('ocwp-active');
     });
 });
 </script>

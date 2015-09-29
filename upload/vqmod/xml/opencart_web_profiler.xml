@@ -2,7 +2,7 @@
 <modification>
 	<id>OpenCart Web Profiler</id>
 	<version>1</version>
-	<vqmver>2.4.1</vqmver>
+	<vqmver>2.5.1</vqmver>
 	<author>David Teal - Welford Media</author>
     <!-- Start WebProfiler -->
     <file name="system/startup.php">
@@ -59,7 +59,7 @@
     <!-- Queries -->
 	<file name="system/library/db.php">
 		<operation>
-			<search position="replace"><![CDATA[return $this->driver->query($sql);]]></search>
+			<search position="replace"><![CDATA[return $this->db->query($sql);]]></search>
 			<add><![CDATA[
                 global $_wp;
 
@@ -67,7 +67,7 @@
                     $start = microtime(true);
                 }
 
-                $result = $this->driver->query($sql);
+                $result = $this->db->query($sql);
 
                 if ($_wp) {
                     $_wp->addEntry('query', $sql, $start);
@@ -77,10 +77,10 @@
             ]]></add>
 		</operation>
 	</file>
-	<file name="system/engine/controller.php">
-        <!-- Child Methods -->
+    <!-- Methods -->
+	<file name="system/engine/action.php">
 		<operation>
-			<search position="after"><![CDATA[protected function getChild($child, $args = array()) {]]></search>
+			<search position="before"><![CDATA[if (is_file($this->file)) {]]></search>
 			<add><![CDATA[
                 global $_wp;
 
@@ -90,54 +90,30 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search position="before"><![CDATA[return $controller->output;]]></search>
+			<search position="before"><![CDATA[return call_user_func(array($controller, $this->method), $this->args);]]></search>
 			<add><![CDATA[
                 if ($_wp) {
-                    $_wp->addEntry('method', $action->getClass() . '::' . $action->getMethod(), $start);
-                }
-            ]]></add>
-		</operation>
-        <!-- Templates -->
-		<operation>
-			<search position="after"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->template)) {]]></search>
-			<add><![CDATA[
-                global $_wp;
-
-                if ($_wp) {
-                    $start = microtime(true);
+                    $_wp->addEntry('method', $this->class . '::' . $this->method, $start, $primary);
                 }
             ]]></add>
 		</operation>
 		<operation>
-			<search position="before"><![CDATA[return $this->output;]]></search>
-			<add><![CDATA[
-                if ($_wp) {
-                    $_wp->addEntry('template', $this->template, $start);
-                }
-            ]]></add>
+			<search position="replace"><![CDATA[public function execute($registry) {]]></search>
+			<add><![CDATA[public function execute($registry, $primary = false) {]]></add>
 		</operation>
 	</file>
-    <!-- Front Methods -->
 	<file name="system/engine/front.php">
 		<operation>
-			<search position="before"><![CDATA[if (file_exists($action->getFile())) {]]></search>
-			<add><![CDATA[
-                global $_wp;
-
-                if ($_wp) {
-                    $front_action = $action;
-
-                    $start = microtime(true);
-                }
-            ]]></add>
+			<search position="replace"><![CDATA[$action = $this->execute($action);]]></search>
+			<add><![CDATA[$action = $this->execute($action, true);]]></add>
 		</operation>
 		<operation>
-			<search position="before"><![CDATA[return $action;]]></search>
-			<add><![CDATA[
-                if ($_wp) {
-                    $_wp->addEntry('method', $front_action->getClass() . '::' . $front_action->getMethod(), $start);
-                }
-            ]]></add>
+			<search position="replace"><![CDATA[private function execute($action) {]]></search>
+			<add><![CDATA[private function execute($action, $primary = false) {]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$result = $action->execute($this->registry);]]></search>
+			<add><![CDATA[$result = $action->execute($this->registry, $primary);]]></add>
 		</operation>
 	</file>
 </modification>

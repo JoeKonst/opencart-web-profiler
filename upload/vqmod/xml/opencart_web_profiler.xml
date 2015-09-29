@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<id>OpenCart Web Profiler</id>
+	<version>1</version>
+	<vqmver>2.4.1</vqmver>
+	<author>David Teal - Welford Media</author>
+    <!-- Start WebProfiler -->
+    <file name="system/startup.php">
+		<operation>
+			<search position="after"><![CDATA[<?php]]></search>
+			<add><![CDATA[
+                //Only run WebProfiler on dev machines on the front end
+                if (strpos(HTTP_SERVER, 'welfordlocal') !== false && strpos(HTTP_SERVER, '/admin/') === false) {
+                    require_once(VQMod::modCheck(DIR_SYSTEM . 'library/web_profiler.php'));
+
+                    $_wp = new WebProfiler();
+                }
+            ]]></add>
+		</operation>
+	</file>
+    <!-- Finish WebProfiler -->
+	<file name="system/library/response.php">
+		<operation>
+			<search position="before"><![CDATA[echo $output;]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $_wp->finish();
+                    $_wp->log();
+
+                    $output = str_replace('</html>', $_wp->template() . '</html>', $output);
+                }
+            ]]></add>
+		</operation>
+	</file>
+    <!-- Set registries -->
+	<file name="catalog/controller/common/header.php">
+		<operation>
+			<search position="after"><![CDATA[index() {]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $_wp->setRegistries($this->registry);
+
+                    //Set default cookies; logging = off, template = on.
+                    if (!isset($this->request->cookie['wplog'])) {
+                        setcookie('wplog', 0, time() + (86400 * 30), '/', $this->request->server['HTTP_HOST']);
+                    }
+
+                    if (!isset($this->request->cookie['wptemplate'])) {
+                        setcookie('wptemplate', 1, time() + (86400 * 30), '/', $this->request->server['HTTP_HOST']);
+                    }
+                }
+            ]]></add>
+		</operation>
+	</file>
+    <!-- Queries -->
+	<file name="system/library/db.php">
+		<operation>
+			<search position="replace"><![CDATA[return $this->driver->query($sql);]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $start = microtime(true);
+                }
+
+                $result = $this->driver->query($sql);
+
+                if ($_wp) {
+                    $_wp->addEntry('query', $sql, $start);
+                }
+
+                return $result;
+            ]]></add>
+		</operation>
+	</file>
+	<file name="system/engine/controller.php">
+        <!-- Child Methods -->
+		<operation>
+			<search position="after"><![CDATA[protected function getChild($child, $args = array()) {]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $start = microtime(true);
+                }
+            ]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[return $controller->output;]]></search>
+			<add><![CDATA[
+                if ($_wp) {
+                    $_wp->addEntry('method', $action->getClass() . '::' . $action->getMethod(), $start);
+                }
+            ]]></add>
+		</operation>
+        <!-- Templates -->
+		<operation>
+			<search position="after"><![CDATA[if (file_exists(DIR_TEMPLATE . $this->template)) {]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $start = microtime(true);
+                }
+            ]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[return $this->output;]]></search>
+			<add><![CDATA[
+                if ($_wp) {
+                    $_wp->addEntry('template', $this->template, $start);
+                }
+            ]]></add>
+		</operation>
+	</file>
+    <!-- Front Methods -->
+	<file name="system/engine/front.php">
+		<operation>
+			<search position="before"><![CDATA[if (file_exists($action->getFile())) {]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $front_action = $action;
+
+                    $start = microtime(true);
+                }
+            ]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[return $action;]]></search>
+			<add><![CDATA[
+                if ($_wp) {
+                    $_wp->addEntry('method', $front_action->getClass() . '::' . $front_action->getMethod(), $start);
+                }
+            ]]></add>
+		</operation>
+	</file>
+</modification>

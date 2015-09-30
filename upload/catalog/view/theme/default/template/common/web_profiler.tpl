@@ -102,10 +102,13 @@ a.wp-ajax {
 /******************** DROPDOWN MENU ***************
  ********************               ***************/
 
+.ocwp-tab {
+    cursor: pointer;
+}
+
 .ocwp-dropdown {
     position: relative;
     padding: 15px 0;
-    cursor: pointer;
 }
 
 .ocwp-dropdown > img {
@@ -474,13 +477,13 @@ img[src*='welford.png'] {
     <div class="ocwp-cross-container"><img src="image/web_profiler/times.png"></div>
     <ul class="ocwp-ul">
         <li class="ocwp-dropdown">
-            <img src="image/web_profiler/welford.png" class="ocwp-web-icon"></i><span class="ocwp-span-text ocwp-span web-profiler-title">OpenCart Web Profiler&nbsp;&nbsp;&nbsp;</span>
+            <img src="image/web_profiler/welford.png" class="ocwp-web-icon"><span class="ocwp-span-text ocwp-span web-profiler-title">OpenCart Web Profiler&nbsp;&nbsp;&nbsp;</span>
         </li>
         <li class="ocwp-dropdown">
             <img src="image/web_profiler/web-icon.png" class="ocwp-web-icon"><span class="ocwp-span-text ocwp-span">HTTP Status: <?php echo $response_code; ?>&nbsp;&nbsp;&nbsp;</span>
         </li>
         <?php if ($type_method) { ?>
-            <li class="ocwp-dropdown">
+            <li class="ocwp-dropdown ocwp-tab">
                 <img src="image/web_profiler/home.png" class="ocwp-web-icon"><span class="ocwp-span-text ocwp-span"><?php echo $controller; ?>::<?php echo $method; ?>&nbsp;&nbsp;&nbsp;</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-common ocwp-text-white">
                     <li class="list-title">Methods (<?php echo $type_method['quantity_entries']; ?>)</li>
@@ -493,7 +496,7 @@ img[src*='welford.png'] {
             </li>
         <?php } ?>
         <?php if ($type_query) { ?>
-            <li class="ocwp-dropdown ocwp-query">
+            <li class="ocwp-dropdown ocwp-query ocwp-tab">
                 <img src="image/web_profiler/query.png" class="ocwp-web-icon ocwp-query-icon"><span class="ocwp-span-text ocwp-span"><?php echo $type_query['quantity_total']; ?> queries: <?php echo $type_query['time_taken_total']; ?> secs</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-queries ocwp-text-white ocwp-ul">
                     <li class="list-title">Slowest <?php echo $type_query['quantity_entries']; ?> took <?php echo $type_query['time_taken_entries']; ?></li>
@@ -530,7 +533,7 @@ img[src*='welford.png'] {
         <li class="ocwp-dropdown">
             <img src="image/web_profiler/medium.svg" class="ocwp-web-icon"><span class="ocwp-span-text-dynamic ocwp-span"><?php echo $memory_used; ?></span>
         </li>
-        <li class="ocwp-dropdown">
+        <li class="ocwp-dropdown ocwp-tab">
             <img src="image/web_profiler/wrench.svg" class="ocwp-web-icon"><span class="ocwp-span-text-dynamic ocwp-span">Settings</span>
             <ul class="ocwp-dropdown-nav ocwp-dropdown-nav-settings ocwp-ul">
                 <li><a class="wp-ajax" data-type="vqmod_cache">Clear vQmod cache</a></li>
@@ -539,7 +542,7 @@ img[src*='welford.png'] {
                 <li><a class="wp-ajax" data-type="toggle_wplog">Toggle Web Profiler log</a></li>
             </ul>
         </li>
-        <li class="ocwp-dropdown">
+        <li class="ocwp-dropdown ocwp-tab">
             <img src="image/web_profiler/log.png" class="ocwp-web-icon"><span class="ocwp-span-text ocwp-span">Logs</span>
             <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-logs ocwp-text-white ocwp-ul">
                 <li><h3 class="log-title">vQmod Logs</h3></li>
@@ -549,8 +552,12 @@ img[src*='welford.png'] {
                     <li>No vQmod logs found</li>
                 <?php } ?>
                 <li><h3 class="log-title">System Logs</h3></li>
+                <?php if ($system_logs) { ?>
                 <?php foreach ($system_logs as $system_log) { ?>
-                    <?php echo $system_log['name'] . '(' . $system_log['size'] . ')'; ?>
+                <li><?php echo $system_log['name'] . '(' . $system_log['size'] . ')'; ?></li>
+                <?php } ?>
+                <?php } else { ?>
+                <li>No system logs found</li>
                 <?php } ?>
             </ul>
         </li>
@@ -590,9 +597,9 @@ $(document).ready(function() {
 
     $('.ocwp-cross-container').on('click', function(){
         $("#container").toggleClass("ocwp-container-push");
-        
+
         $('.ocwp-dropdown-nav').removeClass('ocwp-active');
-        
+
         $(".ocwp-bars-container").show();
     });
 
@@ -600,14 +607,10 @@ $(document).ready(function() {
         $(".ocwp-menu").toggleClass("ocwp-toggle-nav");
     });
 
-    $(".ocwp-dropdown").eq(2).on("click", function(){
-        $(".ocwp-dropdown-nav").eq(0).toggle();
-    });
-
     $('.ocwp-query .view-link').on('click', function(event) {
-        event.stopPropagation();
+        event.preventDefault();
 
-        $(".sub-queries-ocwp-dropdown").hide();
+        $('.sub-queries-ocwp-dropdown').hide();
 
         $(".sub-queries-ocwp-dropdown[data-id='" + $(this).attr('data-id') + "']").show();
     });
@@ -616,28 +619,18 @@ $(document).ready(function() {
         event.stopPropagation();
     });
 
-   $(document).mouseup(function(e) {
-       var container = $(".sub-queries-ocwp-dropdown");
+    $('.ocwp-tab').on('click', function() {
+        var addClass = true;
 
-     if (!container.is(e.target) // if the target of the click isn't the container...
-       && container.has(e.target).length === 0) // ... nor a descendant of the container
-      {
-           container.hide();
-       }
-   });
-
-    $(document).mouseup(function(e) {
-        var container = $(".ocwp-dropdown-nav");
-
-        if (!container.is(e.target) // if the target of the click isn't the container...
-        && container.has(e.target).length === 0) // ... nor a descendant of the container
-        {
-            container.hide();
+        if ($(this).find('.ocwp-dropdown-nav').hasClass('ocwp-active')) {
+            addClass = false;
         }
-    });
-            
-    $('.ocwp-dropdown').on('click', function() {        
-        $(this).find('.ocwp-dropdown-nav').toggleClass('ocwp-active');
+
+        $('.ocwp-dropdown-nav').removeClass('ocwp-active');
+
+        if (addClass) {
+            $(this).find('.ocwp-dropdown-nav').addClass('ocwp-active');
+        }
     });
 });
 </script>

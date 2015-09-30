@@ -22,14 +22,6 @@ class WebProfiler {
         $this->setFinishTime(microtime(true));
         $this->setFinishMemory(memory_get_usage(true));
         $this->setResponseCode(http_response_code());
-
-        $front_entries = $this->getEntries('method');
-        $fronts = array_slice($front_entries['method']['entries'], 0, 1);
-        $main_front = array_shift($fronts);
-        $main_front = explode('::', $main_front['text']);
-
-        $this->setMainController($main_front[0]);
-        $this->setMainMethod($main_front[1]);
     }
 
     public function formatTime($time) {
@@ -73,13 +65,12 @@ class WebProfiler {
             return '';
         }
 
-        $template = new Template();
-
-        $template->data['response_code'] = $this->getResponseCode();
-        $template->data['memory_used'] = $this->formatMemory($this->getFinishMemory() - $this->getStartMemory());
-        $template->data['time_taken'] = $this->formatTime($this->getFinishTime() - $this->getStartTime());
-        $template->data['controller'] = $this->getMainController();
-        $template->data['method'] = $this->getMainMethod();
+        $template = array();
+        $template['response_code'] = $this->getResponseCode();
+        $template['memory_used'] = $this->formatMemory($this->getFinishMemory() - $this->getStartMemory());
+        $template['time_taken'] = $this->formatTime($this->getFinishTime() - $this->getStartTime());
+        $template['controller'] = $this->getMainController();
+        $template['method'] = $this->getMainMethod();
 
         $method = array();
         $entries = $this->getEntries('method');
@@ -87,7 +78,7 @@ class WebProfiler {
             $method = $entries['method'];
         }
 
-        $template->data['type_method'] = $method;
+        $template['type_method'] = $method;
 
         $query = array();
         $entries = $this->getEntries('query');
@@ -95,7 +86,7 @@ class WebProfiler {
             $query = $entries['query'];
         }
 
-        $template->data['type_query'] = $query;
+        $template['type_query'] = $query;
 
         $template_data = array();
         $entries = $this->getEntries('template');
@@ -103,9 +94,9 @@ class WebProfiler {
             $template_data = $entries['template'];
         }
 
-        $template->data['type_template'] = $template_data;
+        $template['type_template'] = $template_data;
 
-        $template->data['vqmod_logs'] = glob(DIR_SYSTEM . '../vqmod/logs/*.log');
+        $template['vqmod_logs'] = glob(DIR_SYSTEM . '../vqmod/logs/*.log');
 
         $system_logs = glob(DIR_SYSTEM . 'logs/*');
 
@@ -113,20 +104,27 @@ class WebProfiler {
             'index.html'
         );
 
-        $template->data['system_logs'] = array();
+        $template['system_logs'] = array();
         foreach ($system_logs as $system_log) {
             if (!in_array(basename($system_log), $exclude_logs) && filesize($system_log)) {
-                $template->data['system_logs'][] = array(
+                $template['system_logs'][] = array(
                     'name' => basename($system_log),
                     'size' => $this->formatMemory(filesize($system_log)),
                 );
             }
         }
 
-        return $template->fetch('default/template/common/web_profiler.tpl');
+        return $this->fetchTemplate('default/template/common/web_profiler.tpl', $template);
     }
 
-    public function addEntry($type, $text, $start) {
+    public function addEntry($type, $text, $start, $primary = false) {
+        if ($primary && $type == 'method') {
+            $front = explode('::', $text);
+
+            $this->setMainController($front[0]);
+            $this->setMainMethod($front[1]);
+        }
+
 		$this->entries[] = array(
 			'type'       => $type,
             'text'       => trim(preg_replace('/\s+/', ' ', $text)),
@@ -189,6 +187,24 @@ class WebProfiler {
 		$this->request = $registry->get('request');
 		$this->session = $registry->get('session');
     }
+
+	public function fetchTemplate($filename, $data) {
+		$file = DIR_TEMPLATE . $filename;
+
+		if (file_exists($file)) {
+			extract($data);
+
+      		ob_start();
+
+	  		include($file);
+
+	  		$content = ob_get_contents();
+
+      		ob_end_clean();
+
+      		return $content;
+    	}
+	}
 
     public function getStartTime() {
         return $this->start_time;

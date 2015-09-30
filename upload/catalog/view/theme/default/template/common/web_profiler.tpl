@@ -514,7 +514,7 @@ img[src*='welford.png'] {
             </li>
         <?php } ?>
         <?php if ($type_template) { ?>
-            <li class="ocwp-dropdown">
+            <li class="ocwp-dropdown ocwp-tab">
                 <img src="image/web_profiler/code.png" class="ocwp-web-icon">
                 <span class="ocwp-span-text-templates ocwp-span"><?php echo $type_template['quantity_total']; ?> templates: <?php echo $type_template['time_taken_total']; ?> secs</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-templates ocwp-text-white ocwp-ul">

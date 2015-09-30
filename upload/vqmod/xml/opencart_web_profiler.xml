@@ -77,6 +77,27 @@
             ]]></add>
 		</operation>
 	</file>
+    <!-- Templates -->
+	<file name="system/engine/loader.php">
+		<operation>
+			<search position="before"><![CDATA[extract($data);]]></search>
+			<add><![CDATA[
+                global $_wp;
+
+                if ($_wp) {
+                    $start = microtime(true);
+                }
+            ]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[return $output;]]></search>
+			<add><![CDATA[
+                if ($_wp) {
+                    $_wp->addEntry('template', $template, $start);
+                }
+            ]]></add>
+		</operation>
+	</file>
     <!-- Methods -->
 	<file name="system/engine/action.php">
 		<operation>
@@ -90,11 +111,15 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search position="before"><![CDATA[return call_user_func(array($controller, $this->method), $this->args);]]></search>
+			<search position="replace"><![CDATA[return call_user_func(array($controller, $this->method), $this->args);]]></search>
 			<add><![CDATA[
+                $execute = call_user_func(array($controller, $this->method), $this->args);
+
                 if ($_wp) {
                     $_wp->addEntry('method', $this->class . '::' . $this->method, $start, $primary);
                 }
+
+                return $execute;
             ]]></add>
 		</operation>
 		<operation>

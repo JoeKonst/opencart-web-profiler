@@ -323,10 +323,10 @@ a.wp-ajax {
 .ocwp-web-icon {
     width: 20px;
     position: relative;
-    top: 4px;
+    top: -3px;
 }
 
-.ocwp-query-icon {top: 4px;}
+.ocwp-query-icon {top: -1px;}
 
 @media (max-width: 500px) {
     .ocwp-query-icon {
@@ -436,7 +436,7 @@ a.wp-ajax {
 
 img[src*='welford.png'] {
     position: relative;
-    top: 1px;
+    top: -1px;
     left: 2px;
 }
 

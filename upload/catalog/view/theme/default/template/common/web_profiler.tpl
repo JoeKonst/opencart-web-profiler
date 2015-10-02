@@ -337,8 +337,6 @@ a.wp-ajax {
 /******************** SLIDESHOW/Z-INDEX ********************
  ********************                   *******************/
 
-div#slideshow0 {z-index: -100;}
-
 .slideshow {z-index: -999;}
 
 #menu > ul > li {z-index: 0;}

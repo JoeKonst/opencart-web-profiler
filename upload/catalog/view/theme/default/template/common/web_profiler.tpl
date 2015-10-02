@@ -500,7 +500,7 @@ img[src*='welford.png'] {
                     <li class="list-title">Slowest <?php echo $type_query['quantity_entries']; ?> took <?php echo $type_query['time_taken_entries']; ?></li>
                     <ul class="ocwp-ul ocwp-cf">
                         <?php foreach ($type_query['entries'] as $key => $entry) { ?>
-                            <li class="ocwp-list-item ocwp-center ocwp-view-list"><div class="method-col-view"><a href="#" data-id="<?php echo $key; ?>" class="view-link">View</a></div><div class="time-col-view"><?php echo $entry['time_taken']; ?></div></li>
+                            <li class="ocwp-list-item ocwp-center ocwp-view-list ocwp-cf"><div class="method-col-view"><a href="#" data-id="<?php echo $key; ?>" class="view-link">View</a></div><div class="time-col-view"><?php echo $entry['time_taken']; ?></div></li>
                         <?php } ?>
                     </ul>
                     <?php foreach ($type_query['entries'] as $key => $entry) { ?>

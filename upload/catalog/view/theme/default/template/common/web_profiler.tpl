@@ -606,7 +606,7 @@ $(document).ready(function() {
     });
 
     $('.ocwp-query .view-link').on('click', function(event) {
-        event.preventDefault();
+        event.stopPropagation();
 
         $('.sub-queries-ocwp-dropdown').hide();
 

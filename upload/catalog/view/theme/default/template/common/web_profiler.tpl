@@ -117,6 +117,10 @@ a.wp-ajax {
     display: inline-block;
 }
 
+.ocwp-dropdown a {
+    color: white;
+}
+
 .ocwp-dropdown > .fa-clock-o, .ocwp-dropdown > span > .fa-medium, .ocwp-dropdown > .fa-wrench {
     margin-left: 10px;
     display: inline-block;

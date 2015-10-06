@@ -22,6 +22,7 @@
     padding: 0;
     margin: 0;
     list-style: none;
+    box-sizing: border-box;
 }
 
 .ocwp-span {padding-left: 5px;}
@@ -461,8 +462,6 @@ img[src*='welford.png'] {
 }
 
 .ocwp-cf:after {clear: both;}
-
-* {box-sizing: border-box;}
 
 .pd-0 {
     padding: 0;

@@ -117,7 +117,7 @@ a.wp-ajax {
     display: inline-block;
 }
 
-.ocwp-dropdown a {
+.ocwp-dropdown a, .view-link {
     color: white;
 }
 

@@ -471,6 +471,9 @@ img[src*='welford.png'] {
     padding: 0;
 }
 
+.ocwp-dropdown > ul {cursor: auto;}
+.ocwp-dropdown > ul > li > a {cursor: pointer;}
+
 </style>
 <link href="//fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 <div class="ocwp-bars-container"><img src="image/web_profiler/bars.svg"></div>

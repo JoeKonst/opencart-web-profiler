@@ -636,5 +636,9 @@ $(document).ready(function() {
             $(this).find('.ocwp-dropdown-nav').addClass('ocwp-active');
         }
     });
+
+    $('.ocwp-dropdown > ul').on('click', function(event){
+        event.stopPropagation();
+    });
 });
 </script>

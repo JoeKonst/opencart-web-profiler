@@ -142,11 +142,10 @@ a.wp-ajax {
     color: white;
     display: inline-block;
     width: 100%;
-    padding: 40px 0;
+    padding: 20px 0;
     text-align: center;
     font-weight: bold;
     font-size: 1.2em;
-    position: relative;
 }
 
 .ocwp-dropdown-nav > h3 + span {
@@ -475,12 +474,6 @@ img[src*='welford.png'] {
 .ocwp-dropdown > ul {cursor: auto;}
 .ocwp-dropdown > ul > li > a {cursor: pointer;}
 
-.sub-menu-close {
-    position: absolute;
-    top: 5px;
-    right: 7px;
-}
-
 </style>
 <link href="//fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
 <div class="ocwp-bars-container"><img src="image/web_profiler/bars.svg"></div>
@@ -497,7 +490,7 @@ img[src*='welford.png'] {
             <li class="ocwp-dropdown ocwp-tab">
                 <img src="image/web_profiler/home.png" class="ocwp-web-icon"><span class="ocwp-span-text ocwp-span"><?php echo $controller; ?>::<?php echo $method; ?>&nbsp;&nbsp;&nbsp;</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-common ocwp-text-white">
-                    <li class="list-title">Methods (<?php echo $type_method['quantity_entries']; ?>)<span class="sub-menu-close">X</span></li>
+                    <li class="list-title">Methods (<?php echo $type_method['quantity_entries']; ?>)</li>
                     <ul class="ocwp-ul ocwp-cf">
                         <?php foreach ($type_method['entries'] as $entry) { ?>
                             <li class="ocwp-list-item ocwp-cf"><div class="method-col"><?php echo $entry['text']?>;</div><div class="time-col"><?php echo $entry['time_taken']; ?></div></li>
@@ -510,7 +503,7 @@ img[src*='welford.png'] {
             <li class="ocwp-dropdown ocwp-query ocwp-tab">
                 <img src="image/web_profiler/query.png" class="ocwp-web-icon ocwp-query-icon"><span class="ocwp-span-text ocwp-span"><?php echo $type_query['quantity_total']; ?> queries: <?php echo $type_query['time_taken_total']; ?> secs</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-queries ocwp-text-white ocwp-ul">
-                    <li class="list-title">Slowest <?php echo $type_query['quantity_entries']; ?> took <?php echo $type_query['time_taken_entries']; ?><span class="sub-menu-close">X</span></li>
+                    <li class="list-title">Slowest <?php echo $type_query['quantity_entries']; ?> took <?php echo $type_query['time_taken_entries']; ?></li>
                     <ul class="ocwp-ul ocwp-cf">
                         <?php foreach ($type_query['entries'] as $key => $entry) { ?>
                             <li class="ocwp-list-item ocwp-center ocwp-view-list ocwp-cf"><div class="method-col-view"><a href="#" data-id="<?php echo $key; ?>" class="view-link">View</a></div><div class="time-col-view"><?php echo $entry['time_taken']; ?></div></li>
@@ -529,7 +522,7 @@ img[src*='welford.png'] {
                 <img src="image/web_profiler/code.png" class="ocwp-web-icon">
                 <span class="ocwp-span-text-templates ocwp-span"><?php echo $type_template['quantity_total']; ?> templates: <?php echo $type_template['time_taken_total']; ?> secs</span>
                 <ul class="ocwp-dropdown-nav ocwp-dropdown-container-styles ocwp-dropdown-nav-templates ocwp-text-white ocwp-ul">
-                    <li class="list-title">Slowest <?php echo $type_template['quantity_entries']; ?> took <?php echo $type_template['time_taken_entries']; ?><span class="sub-menu-close">X</span></li>
+                    <li class="list-title">Slowest <?php echo $type_template['quantity_entries']; ?> took <?php echo $type_template['time_taken_entries']; ?></li>
                     <ul class="ocwp-ul">
                         <?php foreach ($type_template['entries'] as $entry) { ?>
                             <li class="ocwp-list-item ocwp-cf"><div class="method-col"><?php echo $entry['text']?>;</div><div class="time-col"><?php echo $entry['time_taken']; ?></div></li>
